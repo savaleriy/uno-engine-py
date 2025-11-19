@@ -14,7 +14,7 @@ from pathlib import Path
 
 from uno.engine import UnoSimulation
 # Imports Bots
-from uno.bots import RandomBot, WildFirstBot, WildLastBot
+from uno.bots import RandomBot, WildLastBot, WildFirstBot, Zombie_JimBot
 
 
 class UNOCLI:
@@ -104,8 +104,10 @@ Examples:
         """Instantiate bot objects based on CLI arguments"""
         bot_classes = {
             "RandomBot": RandomBot,
-            "WildFirstBot": WildFirstBot, 
-            "WildLastBot": WildLastBot
+            "Zombie_JimBot": Zombie_JimBot, 
+            "WildLastBot": WildLastBot,
+            "WildFirstBot" : WildFirstBot
+            
         }
         
         bots = []
@@ -194,11 +196,14 @@ def run_default_simulation() -> Dict[str, Any]:
         Dictionary containing simulation statistics
     """
     bots = [
-        RandomBot("Random1", 1),
-        WildFirstBot("WildFirst", 2),
+        # RandomBot("Random1", 1),
+        Zombie_JimBot("Zombie_Jim", 2),
+        # WildLastBot("WildFLastBot", 3),
+        WildFirstBot("WildFirstBot", 4)
+        
     ]
     
-    simulation = UnoSimulation(bots, num_games=1_000)
+    simulation = UnoSimulation(bots, num_games=1000)
     stats = simulation.run_simulation()
     
     simulation.print_statistics(stats)
@@ -209,8 +214,7 @@ def run_default_simulation() -> Dict[str, Any]:
 
 def main():
     """Main entry point"""
-    cli = UNOCLI()
-    
+    cli = UNOCLI() 
     try:
         # If no arguments provided, run default simulation
         if len(sys.argv) == 1:
