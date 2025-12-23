@@ -9,6 +9,13 @@ A comprehensive UNO card game engine with multiple AI bot implementations, desig
 | **RandomBot** | Completely random valid moves | Chaotic |
 | **WildFirstBot** | Plays wild cards immediately | Aggressive |
 | **WildLastBot** | Saves wild cards for endgame | Conservative |
+| **ZemtsevBot** | [Zemtsev Dmitriy](https://github.com/ByySpeenyx) |  |
+| **KintselBot** | [Nikita Kintsel](https://github.com/nstathams) |  |
+| **WellBot** | [Olga Usanova](https://github.com/WellHelga) |  |
+| **AkimVBot** | [Volgin Akim](https://github.com/ggvp989) |  |
+| **ZhadnovBot** | [Zhadnov Ivan](https://github.com/Vansoooo) |  |
+| **SkripkinBot** | [Mikhail Skripkin](https://github.com/davbych) |  |
+
 
 ## Quick Start
 
@@ -120,27 +127,6 @@ Random3 (RandomBot):  1135 wins ( 11.35%)
 ![](images/uno_simulation_results.png)
 
 
-## Project Structure
-
-```
-uno-engine-py/
-├── uno/
-│   ├── engine/
-│   │   ├── engine.py          # Main game engine
-│   │   ├── deck.py            # Deck management
-│   │   └── card.py            # Card classes and logic
-│   ├── bots/
-│   │   ├── random_bot.py      # Random strategy
-│   │   ├── wild_first_bot.py  # Wild-first strategy
-│   │   └── wild_last_bot.py   # Wild-last strategy
-|   └── player/
-|       └── player.py # Player Abstract class
-├── main.py                    # Entry point
-├── pyproject.toml            # Project configuration
-└── README.md
-```
-
-
 ## Creating New Bots
 
 1. Extend the `Player` base class:
@@ -167,11 +153,5 @@ class MyCustomBot(Player):
         """
         pass
 ```
-
-2. Implement the required abstract methods
-3. Add your bot to the simulation runner
-
-
-
 
 

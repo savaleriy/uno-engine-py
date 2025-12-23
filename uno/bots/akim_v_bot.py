@@ -7,7 +7,8 @@ from ..engine.card import Card, CardColor
 from ..player.player import Player, PlayerAction
 
 
-class MyBot(Player):
+class AkimVBot(Player):
+    AUTHOR = "Akim Volgin"
 
     def __init__(self, name: str, player_id: int):
         super().__init__(name, player_id)
@@ -22,14 +23,22 @@ class MyBot(Player):
 
     def choose_action(self) -> PlayerAction:
         valid_selections = [
-            card for card in self.hand
+            card
+            for card in self.hand
             if card.can_play_on(self._top_card, self._current_color)
         ]
 
         if not valid_selections:
-            return PlayerAction(draw_card = True)
-        hand_size = len(self.hand) < 5
-        color_counts = {color: 0 for color in [CardColor.RED, CardColor.BLUE, CardColor.GREEN, CardColor.YELLOW]}
+            return PlayerAction(draw_card=True)
+        color_counts = {
+            color: 0
+            for color in [
+                CardColor.RED,
+                CardColor.BLUE,
+                CardColor.GREEN,
+                CardColor.YELLOW,
+            ]
+        }
         for card in self.hand:
             if card.color in color_counts:
                 color_counts[card.color] += 1
@@ -54,12 +63,9 @@ class MyBot(Player):
                 if x_color:
                     selection = max(x_color)
 
-
         return PlayerAction(selection, draw_card=False)
 
     def choose_color(self, wild_card: Card) -> CardColor:
-
-      
         return random.choice(
             [CardColor.RED, CardColor.BLUE, CardColor.GREEN, CardColor.YELLOW]
         )
@@ -71,8 +77,6 @@ class MyBot(Player):
         return True
 
     def should_play_drawn_card(self, drawn_card: Card) -> bool:
-
-   
         if drawn_card.can_play_on(self._top_card, self._current_color):
             return True
         return True

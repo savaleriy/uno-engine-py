@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from random import choice
 from typing import List, Optional
 
 from ..engine.card import Card, CardColor
 from ..player.player import Player, PlayerAction
 
 
-class super_bot(Player):
+class ZhadnovBot(Player):
+    AUTHOR = "Ivan Zhadnov"
     """
     A bot that plays its wild cards first.
     """
@@ -62,7 +62,12 @@ class super_bot(Player):
                         green.append(clrs)
                     elif clrs.color.name == "YELLOW":
                         yellow.append(clrs)
-                cards = [[red, len(red)],[blue, len(blue)],[green, len(green)],[yellow,len(yellow)]]
+                cards = [
+                    [red, len(red)],
+                    [blue, len(blue)],
+                    [green, len(green)],
+                    [yellow, len(yellow)],
+                ]
                 max_count = 0
                 max_list = []
                 for i in cards:
@@ -105,3 +110,4 @@ class super_bot(Player):
 
     def should_play_drawn_card(self, drawn_card: Card) -> bool:
         return drawn_card.can_play_on(self._top_card, self._current_color)
+

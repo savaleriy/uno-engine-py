@@ -1,16 +1,17 @@
 from __future__ import annotations
 
-from random import choice
 from typing import List, Optional
 
 from ..engine.card import Card, CardColor
 from ..player.player import Player, PlayerAction
 
 
-class RimkaBotSlapper(Player):
+class ZemtsevBot(Player):
     """
     A bot that plays its wild cards first.
     """
+
+    AUTHOR = "Zemtsev Dmitriy"
 
     def __init__(self, name: str, player_id: int):
         super().__init__(name, player_id)
@@ -43,31 +44,31 @@ class RimkaBotSlapper(Player):
                 new_color = self.choose_color(card) if card.is_wild else None
                 return self.play_card(card, new_color)
             else:
-                R=[] #0
-                B=[] #1
-                G=[] #2
-                Y=[] #3
+                R = []  # 0
+                B = []  # 1
+                G = []  # 2
+                Y = []  # 3
                 for i in self.hand:
-                    if i.color.name=="RED":
+                    if i.color.name == "RED":
                         R.append(i)
-                    elif i.color.name=="BLUE":
+                    elif i.color.name == "BLUE":
                         B.append(i)
-                    elif i.color.name=="GREEN":
+                    elif i.color.name == "GREEN":
                         G.append(i)
-                    elif i.color.name=="YELLOW":
+                    elif i.color.name == "YELLOW":
                         Y.append(i)
-                crds=[[R, len(R)],[B, len(B)],[G, len(G)],[Y, len(Y)]]
-                mx=0
-                maj=[]
+                crds = [[R, len(R)], [B, len(B)], [G, len(G)], [Y, len(Y)]]
+                mx = 0
+                maj = []
                 for i in crds:
-                    if i[1]>mx:
-                        mx=i[1]
-                        maj=i[0]
-                mx=0
-                final_card=Card
+                    if i[1] > mx:
+                        mx = i[1]
+                        maj = i[0]
+                mx = 0
+                final_card = Card
                 for i in maj:
-                    if i.label.value>mx:
-                        final_card=i
+                    if i.label.value > mx:
+                        final_card = i
                 return self.play_card(final_card)
         else:
             # No playable cards, must draw

@@ -1,53 +1,71 @@
 from __future__ import annotations
 
-from random import choice
 from typing import List, Optional
 
 from ..engine.card import Card, CardColor, CardLabel
 from ..player.player import Player, PlayerAction
 
 
-class DavBot(Player):
+class SkripkinBot(Player):
+    AUTHOR = "Mikhail Skripkin"
 
     def __init__(self, name: str, player_id: int):
         super().__init__(name, player_id)
         self._top_card: Optional[Card] = None
         self._current_color: Optional[CardColor] = None
 
-    def update_game_state(self, playable_cards: List[Card], top_card: Card, current_color: CardColor) -> None:
+    def update_game_state(
+        self, playable_cards: List[Card], top_card: Card, current_color: CardColor
+    ) -> None:
         self._top_card = top_card
         self._current_color = current_color
 
     def choose_action(self) -> PlayerAction:
         valid_selections = [
-            (i, card) for i, card in enumerate(self.hand)
+            (i, card)
+            for i, card in enumerate(self.hand)
             if card.can_play_on(self._top_card, self._current_color)
         ]
 
         if not valid_selections:
             return PlayerAction(draw_card=True)
 
-        draw_cards = [sel for sel in valid_selections if sel[1].label in (CardLabel.DRAW_TWO, CardLabel.WILD_DRAW_FOUR)]
+        draw_cards = [
+            sel
+            for sel in valid_selections
+            if sel[1].label in (CardLabel.DRAW_TWO, CardLabel.WILD_DRAW_FOUR)
+        ]
         if draw_cards:
             card = draw_cards[0][1]
             new_color = self.choose_color(card) if card.is_wild else None
             return self.play_card(card, new_color)
 
-        action_cards = [sel for sel in valid_selections if sel[1].label in (CardLabel.SKIP, CardLabel.REVERSE)]
+        action_cards = [
+            sel
+            for sel in valid_selections
+            if sel[1].label in (CardLabel.SKIP, CardLabel.REVERSE)
+        ]
         if action_cards:
             card = action_cards[0][1]
             new_color = self.choose_color(card) if card.is_wild else None
             return self.play_card(card, new_color)
 
-        wilds = [sel for sel in valid_selections if sel[1].is_wild and sel[1].label != CardLabel.WILD_DRAW_FOUR]
+        wilds = [
+            sel
+            for sel in valid_selections
+            if sel[1].is_wild and sel[1].label != CardLabel.WILD_DRAW_FOUR
+        ]
         if wilds:
             card = wilds[0][1]
             new_color = self.choose_color(card)
             return self.play_card(card, new_color)
 
         number_cards = [
-            sel for sel in valid_selections
-            if not sel[1].is_wild and sel[1].label not in (CardLabel.DRAW_TWO, CardLabel.SKIP, CardLabel.REVERSE)
+            sel
+            for sel in valid_selections
+            if not sel[1].is_wild
+            and sel[1].label
+            not in (CardLabel.DRAW_TWO, CardLabel.SKIP, CardLabel.REVERSE)
         ]
         if number_cards:
             try:
@@ -62,7 +80,15 @@ class DavBot(Player):
             new_color = self.choose_color(card) if card.is_wild else None
             return self.play_card(card, new_color)
 
-        color_groups = {color: [] for color in (CardColor.RED, CardColor.BLUE, CardColor.GREEN, CardColor.YELLOW)}
+        color_groups = {
+            color: []
+            for color in (
+                CardColor.RED,
+                CardColor.BLUE,
+                CardColor.GREEN,
+                CardColor.YELLOW,
+            )
+        }
         for card in self.hand:
             if card.color in color_groups:
                 color_groups[card.color].append(card)
