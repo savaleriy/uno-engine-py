@@ -68,6 +68,13 @@ Examples:
             help="Number of games to simulate (default: 1000)",
         )
         sim_group.add_argument(
+            "--no-reshuffle",
+            action="store_false",
+            dest="endless_reshuffle",
+            default=True,
+            help="Disable endless deck reshuffling (single shuffle at start)",
+        )
+        sim_group.add_argument(
             "--bots",
             "-b",
             nargs="+",
@@ -182,7 +189,9 @@ Examples:
             print("-" * 50)
 
         # Run simulation
-        simulation = UnoSimulation(bots, num_games=args.games)
+        simulation = UnoSimulation(
+            bots, num_games=args.games, endless_reshuffle=args.endless_reshuffle
+        )
         stats = simulation.run_simulation()
 
         # Output results
@@ -212,9 +221,13 @@ def run_default_simulation() -> Dict[str, Any]:
         ZhadnovBot("Zhadnov", 4),
         SkripkinBot("Skripkin", 5),
         KintselBot("Kintsel", 6),
+        RandomBot("Random", 7),
+        WildFirstBot("FirstBot", 8),
+        WildLastBot("LastBot", 9),
+        RandomBot("Random", 10),
     ]
 
-    simulation = UnoSimulation(bots, num_games=1_000)
+    simulation = UnoSimulation(bots, num_games=1_000, endless_reshuffle=False)
     stats = simulation.run_simulation()
 
     simulation.print_statistics(stats)

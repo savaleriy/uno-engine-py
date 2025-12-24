@@ -31,7 +31,12 @@ class UnoGameEngine:
     UNO Game Engine that manages game state, players, and core game logic
     """
 
-    def __init__(self, auto_play: bool = True, turn_delay: float = 1.0):
+    def __init__(
+        self,
+        auto_play: bool = True,
+        turn_delay: float = 1.0,
+        endless_reshuffle: bool = True,
+    ):
         self.deck = Deck()
         self.discard_pile: List[Card] = []
         self.players: List[Player] = []
@@ -45,6 +50,7 @@ class UnoGameEngine:
         self.turn_delay = turn_delay
         self.turn_count = 0
         self.max_turns = 1000
+        self.endless_reshuffle = endless_reshuffle
 
     def add_player(self, player: Player) -> None:
         """
@@ -109,8 +115,11 @@ class UnoGameEngine:
         """
         while True:
             if self.deck.is_empty():
-                # Reshuffle if deck is empty (shouldn't happen initially)
-                self._reshuffle_discard_pile()
+                if self.endless_reshuffle:
+                    # Reshuffle if deck is empty (shouldn't happen initially)
+                    self._reshuffle_discard_pile()
+                else:
+                    raise ValueError("Deck is empty and reshuffling is disabled")
 
             first_card = self.deck.draw(1)[0]
 
@@ -244,13 +253,18 @@ class UnoGameEngine:
         Make a player draw a card from deck
         """
         if self.deck.is_empty():
-            try:
-                self._reshuffle_discard_pile()
-            except ValueError as e:
-                # Handle the case where we can't reshuffle (not enough cards)
+            if self.endless_reshuffle:
+                try:
+                    self._reshuffle_discard_pile()
+                except ValueError as e:
+                    # Handle the case where we can't reshuffle (not enough cards)
+                    self.game_state = GameState.ROUND_OVER
+                    # Return a dummy card or handle this case
+                    raise e  # Re-raise to let calling code handle it
+            else:
+                # No reshuffling allowed - game ends when deck is empty
                 self.game_state = GameState.ROUND_OVER
-                # Return a dummy card or handle this case
-                raise e  # Re-raise to let calling code handle it
+                raise ValueError("Deck is empty and reshuffling is disabled")
 
         drawn_card = self.deck.draw(1)[0]
         player.add_card_to_hand(drawn_card)
@@ -337,7 +351,9 @@ class UnoGameEngine:
             return True
 
         except ValueError as e:
-            if "Not enough cards to reshuffle" in str(e):
+            if "Not enough cards to reshuffle" in str(
+                e
+            ) or "Deck is empty and reshuffling is disabled" in str(e):
                 self._end_game_with_scores()
                 return False
             else:
@@ -394,7 +410,9 @@ class UnoGameEngine:
                 if not self.play_turn():
                     break
             except ValueError as e:
-                if "Not enough cards to reshuffle" in str(e):
+                if "Not enough cards to reshuffle" in str(
+                    e
+                ) or "Deck is empty and reshuffling is disabled" in str(e):
                     self._end_game_with_scores()
                     break
                 else:

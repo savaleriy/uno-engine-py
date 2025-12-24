@@ -11,9 +11,12 @@ class UnoSimulation:
     Runs multiple UNO games and collects statistics.
     """
 
-    def __init__(self, players: List, num_games: int = 1_000):
+    def __init__(
+        self, players: List, num_games: int = 1_000, endless_reshuffle: bool = True
+    ):
         self.players = players
         self.num_games = num_games
+        self.endless_reshuffle = endless_reshuffle
         self.win_counts = {player.name: 0 for player in players}
         self.turn_counts = []
         self.player_types = {player.name: type(player).__name__ for player in players}
@@ -27,7 +30,9 @@ class UnoSimulation:
 
         for game_num in range(1, self.num_games + 1):
             # Create new game engine for each game
-            game = UnoGameEngine(auto_play=True, turn_delay=0)
+            game = UnoGameEngine(
+                auto_play=True, turn_delay=0, endless_reshuffle=self.endless_reshuffle
+            )
 
             # Add players (create new instances to reset state)
             for player in self.players:
@@ -110,16 +115,21 @@ class UnoSimulation:
         percentages = list(stats["win_percentages"].values())
         player_types = [stats["player_types"][player] for player in players]
 
-        # Colors for different bot types
-        type_colors = {
-            "RandomBot": "lightblue",
-            "WildFirstBot": "lightcoral",
-            "WildLastBot": "lightgreen",
-            "OffensiveBot": "red",
-            "DefensiveBot": "blue",
-        }
+        # Generate colors using matplotlib colormap for any number of bot types
+        # Get unique bot types and assign colors from a colormap
+        unique_types = list(set(player_types))
+        colormap = plt.get_cmap("tab20")  # Good for categorical data
+        type_colors = {}
 
-        colors = [type_colors.get(ptype, "gray") for ptype in player_types]
+        for i, bot_type in enumerate(unique_types):
+            # Distribute colors evenly across the colormap range [0, 1]
+            # Handle case when there's only one type
+            if len(unique_types) == 1:
+                type_colors[bot_type] = colormap(0.5)  # Use middle of colormap
+            else:
+                type_colors[bot_type] = colormap(i / (len(unique_types) - 1))
+
+        colors = [type_colors[ptype] for ptype in player_types]
 
         # Plot 1: Win Count Bar Chart
         bars = ax1.bar(players, wins, color=colors, alpha=0.7, edgecolor="black")
@@ -154,7 +164,7 @@ class UnoSimulation:
 
         type_names = list(type_performance.keys())
         type_wins = list(type_performance.values())
-        type_colors_plot = [type_colors.get(t, "gray") for t in type_names]
+        type_colors_plot = [type_colors[t] for t in type_names]
 
         ax3.bar(
             type_names, type_wins, color=type_colors_plot, alpha=0.7, edgecolor="black"
